@@ -1,13 +1,50 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
+/* ProductSlider.css */
+
+.scroll-container {
+    /* display: flex; */
+    overflow-x: auto;
+    white-space: nowrap;
+    transition: transform 0.2s ease-in-out; 
+    scroll-behavior: smooth;
+  }
+  
+  .scroll-item {
+    margin-right: 20px; 
+    transition: transform 0.3s ease-in-out; 
+  }
+  
+
+  .h1{
+    @apply text-black  font-normal text-5xl
+  }
+
+  .h2{
+    @apply text-black   font-bold text-4xl
+  }
+   
+  .h3{
+    @apply text-black  font-bold text-2xl
+  }
+  .h4{
+    @apply text-black font-bold text-xl
+  }
+ 
+  .h5{
+    @apply text-black font-bold  text-lg
+  } 
+  .h6{
+    @apply text-black font-bold   text-sm
+  }
+
+
+  .swiper-pagination{
+   position: unset !important;
+  }
+
+  .swiper-pagination-bullet-active{
+    background: #000 !important;
+  }
