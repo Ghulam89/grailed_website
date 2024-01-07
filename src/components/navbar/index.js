@@ -9,6 +9,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import NavLinks from "../BottomNav/NavLinks";
 import Accordion from "../Accordion/Accordion";
 import { FiSearch } from "react-icons/fi";
+import Register from "../../screens/auth/register";
 
 const Navbar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -41,9 +42,20 @@ const Navbar = () => {
     setAccordion(updatedAccordions);
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const closeModal = () => {
+      setIsModalOpen(false);
+    };
+
   return (
     <>
-      <header className=" bg-white border-b   z-50 sticky top-0   h-20 flex items-center   justify-between md:px-14 px-4">
+    <Register  isModalOpen={isModalOpen} onClose={closeModal}    />
+      <header className=" bg-white border-b   z-40 sticky top-0   h-20 flex items-center   justify-between md:px-14 px-4">
         {/* top navbar  */}
 
         <div className="  flex gap-4">
@@ -96,6 +108,12 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
+               <Button  label={'login'}  className={'text-xs  font-bold uppercase  border py-2 w-16'} />
+            </li>
+            <li>
+               <Button  label={'Sign up'}  onClick={openModal} className={'text-xs  bg-black text-white font-bold uppercase  border py-2'} />
+            </li>
+            {/* <li>
               <Link className=" text-xs  font-bold" to={"/favorites"}>
                 <FaHeart size={25} />
               </Link>
@@ -146,7 +164,7 @@ const Navbar = () => {
                   </Link>
                 </div>
               </div>
-            </li>
+            </li> */}
           </ul>
         </div>
 
