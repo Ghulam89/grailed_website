@@ -18,9 +18,7 @@ const ProductDetails = ({
   children: slides,
   autoSlide = false,
   autoSlideInterval = 3000,
-  price,
-  qty,
-  setQty,
+ 
 }) => {
   const sliders = [
     require("../../assets/images/product1.avif"),

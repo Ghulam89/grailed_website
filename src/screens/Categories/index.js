@@ -392,7 +392,7 @@ const Categories = () => {
           </li>
 
           <li>
-            <a className=" text-gray-500 font-semibold text-xs ">Bottoms</a>
+            <a href="" className=" text-gray-500 font-semibold text-xs ">Bottoms</a>
           </li>
         </ul>
       </div>
