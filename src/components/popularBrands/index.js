@@ -1,5 +1,4 @@
 import React from 'react'
-import CategoryCard from '../cards/CategoryCard'
 import BrandCard from '../cards/BrandCard'
 import { FaLongArrowAltRight } from "react-icons/fa";
 const PopularBrands = () => {

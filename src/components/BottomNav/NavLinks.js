@@ -47,7 +47,7 @@ const NavLinks = () => {
                       All categories
                     </h1>
                     {link.sublinks.map((mysublinks) => (
-                      <div className=" flex justify-between  items-center">
+                      <div className=" flex justify-between  items-center" >
                         <h1 className="text-sm  font-medium leading-9  uppercase">
                           {mysublinks.Head}
                         </h1>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 // import {
 //   PaymentElement,
 //   LinkAuthenticationElement,
@@ -6,12 +6,12 @@ import React, { useEffect, useState } from "react";
 //   useElements,
 // } from "@stripe/react-stripe-js";
 const Checkout = () => {
-  const stripe = useState();
+  // const stripe = useState();
   // const elements = useElements();
 
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [email, setEmail] = useState("");
+  // const [message, setMessage] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
 
   // useEffect(() => {
   //   if (!stripe) {

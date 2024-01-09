@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import Modal from "../../../components/modal";
 import Input from "../../../components/Input";
 import Button from "../../../components/Button";
-import { MdClose } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { FaApple } from "react-icons/fa";
 import { FaFacebookSquare } from "react-icons/fa";
-import { auth, provider, providerFacebook } from "../../../utils/config";
+import { auth, provider } from "../../../utils/config";
 import { signInWithPopup } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
 const Register = ({ isModalOpen, setIsModalOpen, closeModal, openModal }) => {

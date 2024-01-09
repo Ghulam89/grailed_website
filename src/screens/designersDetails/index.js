@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Button from "../../components/Button";
 import ProductSlider from "../../components/sliders/productSlider";
 import DesignersCard from "../../components/cards/DesignersCard";
-import { FaHeart } from "react-icons/fa";
 import Accordion from "../../components/Accordion/Accordion";
 import Product from "../../components/cards/Product";
 

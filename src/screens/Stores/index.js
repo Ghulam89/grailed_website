@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom'
 import { TiUpload } from 'react-icons/ti'
 import { SlLocationPin } from 'react-icons/sl'
 import Tabs from '../../components/Tabs'
-import Product from '../../components/cards/Product'
-import DesignersCard from '../../components/cards/DesignersCard'
 import Accordion from "../../components/Accordion/Accordion";
 import { FaHeart } from "react-icons/fa";
 import { MdClose, MdOutlineStarPurple500 } from "react-icons/md";

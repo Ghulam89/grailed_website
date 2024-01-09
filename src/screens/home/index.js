@@ -1,6 +1,5 @@
 import React from "react";
 import HomeBanner from "../../components/HomeBanner";
-import Button from "../../components/Button";
 import Category from "../../components/category";
 import ShopBanner from "../../components/shopbanner";
 import PopularBrands from "../../components/popularBrands";
