@@ -1,7 +1,6 @@
 // ProductSlider.js
 import React, { useRef } from "react";
 import "./ProductSlider.css";
-import Product from "../../cards/Product";
 import { LiaAngleLeftSolid, LiaAngleRightSolid } from "react-icons/lia";
 const ProductSlider = ({ items }) => {
   const scrollContainerRef = useRef(null);

@@ -1,136 +1,146 @@
-import React from "react";
-// import {
-//   PaymentElement,
-//   LinkAuthenticationElement,
-//   useStripe,
-//   useElements,
-// } from "@stripe/react-stripe-js";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 const Checkout = () => {
-  // const stripe = useState();
-  // const elements = useElements();
+  const stripe = useStripe();
+  const elements = useElements();
 
-  // const [email, setEmail] = useState("");
-  // const [message, setMessage] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  // useEffect(() => {
-  //   if (!stripe) {
-  //     return;
-  //   }
+    if (!stripe || !elements) {
+      return;
+    }
 
-  //   const clientSecret = new URLSearchParams(window.location.search).get(
-  //     "payment_intent_client_secret"
-  //   );
+    const cardElement = elements.getElement(CardElement);
 
-  //   if (!clientSecret) {
-  //     return;
-  //   }
+    const { token, error } = await stripe.createToken(cardElement);
 
-  //   stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-  //     switch (paymentIntent.status) {
-  //       case "succeeded":
-  //         setMessage("Payment succeeded!");
+    if (error) {
+      console.error(error);
+    } else {
+      // Send the token to your server for processing
+      console.log(token);
+    }
+  };
 
-  //         break;
 
-  //       case "processing":
-  //         setMessage("Your payment is processing");
 
-  //         break;
+  const [allProduct, setAllProduct] = useState([]);
+  
+  const {id} = useParams();
 
-  //       case "requires_payment_method":
-  //         setMessage("Your payment was not successful, please try again.");
-  //         break;
-  //       default:
-  //         setMessage("something went wrong.");
-  //     }
-  //   });
-  // }, [stripe]);
+  useEffect(() => {
+    axios
+      .post(`http://34.84.41.203:4142/api/getSingleProduct/${id}`)
+      .then((res) => {
+        console.log(res);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!stripe || !elements) {
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-
-  //   const { error } = await stripe.confirmPayment({
-  //     elements,
-  //     confirmPayment: {
-  //       return_url: "http://localhost:4242/success",
-  //     },
-  //   });
-
-  //   if (error.type === "card_error" || error.type === "validation_error") {
-  //     setMessage(error.message);
-  //   } else {
-  //     setMessage("An unexpected error occurred");
-  //   }
-
-  //   setIsLoading(false);
-  // };
-
-  // const handleEmailChange = (event) => {
-  //   console.log(event);
-  // };
-
-  // const PaymentElementOptions = {
-  //   layout: "tabs",
-  // };
-
+        setAllProduct(res.data, "all products");
+      })
+      .catch((error) => {});
+  }, []);
   return (
-    <div className=" container mx-auto py-10">
-      {/* <form id="payment.form" onSubmit={handleSubmit}>
-        <LinkAuthenticationElement
-          id="link-authentication-element"
-          onChange={handleEmailChange}
-        />
-        <PaymentElement id="payment-element" options={PaymentElementOptions} />
-
-        <button disabled={isLoading || !stripe || !elements} id="submit">
-          <span id="button-text">
-            {isLoading ? (
-              <div className="spinner" id="spinner"></div>
-            ) : (
-              "Pay now"
-            )}
-          </span>
-        </button>
-        {message && <div id="">{message}</div>}
-      </form> */}
-
-      <div   className=" flex">
-        <div className=" w-[50%]">
-         <div className=" p-10">
-         <h5 className="h6">Shipping Address</h5>
-          <div className=" border mt-5 p-4">
-            <div className="">
-              <p>ghulam mustafa</p>
-              <h6>2</h6>
-              <h6>state</h6>
-              <h6>lahore, state 412100</h6>
-              <span>india</span>
-            </div>
-            <div></div>
-          </div>
-         </div>
+    <>
+      <div className=" flex border-b justify-between items-center px-10 h-20">
+        <div>
+          <h1 className=" md:text-4xl  text-2xl text-black font-semibold">
+            {" "}
+            GRAILED
+          </h1>
         </div>
-        <div className=" w-[50%]">
-          <div className=" p-10">
-             <div className=" p-4 flex gap-3 border">
-              <div>
-                <img  src={require('../../assets/images/product1.avif')} className=" w-24 h-24 " alt=""  />
+        <div>
+          <h3 className="h4">Item Checkout</h3>
+        </div>
+        <div></div>
+      </div>
+      <div className="  mx-auto">
+      <form onSubmit={handleSubmit}>
+      <CardElement />
+      <button type="submit" disabled={!stripe}>
+        Pay
+      </button>
+    </form>
+
+        <div className=" flex">
+          <div className=" w-[50%]">
+            <h5 className="h6  px-10 pt-12 pb-5">Shipping Address</h5>
+            <div className=" px-10">
+              <div className=" border  p-4">
+                <div className="">
+                  <p>ghulam mustafa</p>
+                  <h6>2</h6>
+                  <h6>state</h6>
+                  <h6>lahore, state 412100</h6>
+                  <span>india</span>
+                </div>
+                <div></div>
               </div>
-              <div>
-                <span className=" text-black  font-semibold">Palace</span>
+            </div>
+            <h5 className="h6  px-10 pt-10 pb-5">Select Your Payment Method</h5>
+          </div>
+          <div className=" w-[50%]  pt-10  h-[85vh] bg-gray-50">
+            <div className=" p-10">
+              <div className=" p-4 flex gap-3 border">
+                <div className=" w-28">
+                  <img
+                    src={allProduct?.images?.[0]}
+                    className="   w-full h-24 object-cover "
+                    alt=""
+                  />
+                </div>
+                <div className=" w-full flex justify-between items-center">
+                  <div>
+                    <span className="  text-black  text-sm font-bold">
+                      Pleasures
+                    </span>
+                    <p className=" text-sm text-gray-500 pt-2">
+                      Pleasures Vintage Hat Winter Streetwear Y2K
+                    </p>
+                    <p className="text-sm text-gray-500">Size: one size</p>
+                    <p className="text-sm text-gray-600 font-semibold pt-1">
+                      Seller:{" "}
+                      <span className=" border-b border-black">Squad5150</span>
+                    </p>
+                  </div>
+                  <div>
+                    <span className=" text-black font-bold text-sm">$27</span>
+                  </div>
+                </div>
               </div>
-             </div>
+              <div className="p-4">
+                <h5 className="h6">Order Details</h5>
+
+                <ul className=" pt-3">
+                  <li className=" flex justify-between items-center">
+                    <span className=" text-gray-600 text-sm">
+                      Listing Price
+                    </span>
+                    <span className=" text-gray-600 text-sm  font-bold">
+                      $27
+                    </span>
+                  </li>
+                  <li className=" pt-2 flex justify-between items-center">
+                    <span className=" text-gray-600 text-sm">Shipping</span>
+                    <span className=" text-gray-600 text-sm  font-bold">
+                      $20
+                    </span>
+                  </li>
+                  <hr className=" my-3" />
+                  <li className=" pt-2 flex justify-between items-center">
+                    <span className=" text-black font-bold  uppercase">
+                      order total
+                    </span>
+                    <span className=" text-black  font-bold">$47</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,37 +1,27 @@
 import React, { useEffect, useState } from "react";
-import {
-  FaAngleRight,
-  FaHeart,
-  FaLongArrowAltRight,
-} from "react-icons/fa";
+import { FaAngleRight, FaHeart, FaRegHeart } from "react-icons/fa";
 import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
-
 import Button from "../../components/Button";
 import { MdClose, MdOutlineStarPurple500 } from "react-icons/md";
-import { Link } from "react-router-dom";
-import ProductSlider from "../../components/sliders/productSlider";
-import Product from "../../components/cards/Product";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import TestimonialSlider from "../../components/sliders/testimonials";
 import Modal from "../../components/modal";
-
+import axios from "axios";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
+import { Base_url } from "../../utils/Base_url";
 const ProductDetails = ({
   children: slides,
   autoSlide = false,
   autoSlideInterval = 3000,
- 
 }) => {
-  const sliders = [
-    require("../../assets/images/product1.avif"),
-    require("../../assets/images/product2.avif"),
-    require("../../assets/images/product3.avif"),
-    require("../../assets/images/product4.avif"),
-  ];
+  const storedUser = localStorage.getItem("user_ID") || undefined;
 
   const [curr, setCurr] = useState(0);
   const prev = () =>
-    setCurr((curr) => (curr === 0 ? sliders.length - 1 : curr - 1));
+    setCurr((curr) => (curr === 0 ? allProduct?.images.length - 1 : curr - 1));
   const next = () =>
-    setCurr((curr) => (curr === sliders.length - 1 ? 0 : curr + 1));
+    setCurr((curr) => (curr === allProduct?.images?.length - 1 ? 0 : curr + 1));
 
   useEffect(() => {
     if (!autoSlide) return;
@@ -43,47 +33,8 @@ const ProductDetails = ({
     setCurr(index);
   };
 
-  const data = [
-    {
-      id: 1,
-      title: "",
-      image: require("../../assets/images/product1.avif"),
-    },
-    {
-      id: 2,
-      title: "",
-      image: require("../../assets/images/product2.avif"),
-    },
-    {
-      id: 3,
-      title: "",
-      image: require("../../assets/images/product3.avif"),
-    },
-    {
-      id: 4,
-      title: "",
-      image: require("../../assets/images/product4.avif"),
-    },
-    {
-      id: 5,
-      title: "",
-      image: require("../../assets/images/product1.avif"),
-    },
-    {
-      id: 6,
-      title: "",
-      image: require("../../assets/images/product3.avif"),
-    },
-    {
-      id: 7,
-      title: "",
-      image: require("../../assets/images/product4.avif"),
-    },
-  ];
-
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -91,7 +42,6 @@ const ProductDetails = ({
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
 
   const [isModalSlider, setIsModalSlider] = useState(false);
 
@@ -103,95 +53,133 @@ const ProductDetails = ({
     setIsModalSlider(false);
   };
 
+  const { id } = useParams();
+  const [allProduct, setAllProduct] = useState({});
+  const [singleStore, setSignleStore] = useState({});
+
+  console.log(allProduct, "==================>>>>>>>>>>>");
+
+  useEffect(() => {
+    axios
+      .post(`${Base_url}/getSingleProduct/${id}`)
+      .then((res) => {
+        console.log(res);
+
+        setAllProduct(res.data, "all products");
+
+    axios
+    .post(`${Base_url}/getSingleStore/${res.data?.createdBy?.store}`)
+    .then((res) => {
+      console.log(res);
+
+      setSignleStore(res.data.store, "all products");
+    })
+    .catch((error) => {});
+      })
+      .catch((error) => {});
+
+  }, []);
+
+  const [isLiked, setIsLiked] = useState(
+    allProduct?.likes?.includes(storedUser)
+  );
+  const [likesCount, setLikesCount] = useState(allProduct?.likes?.length);
+  console.log(isLiked);
+
+  const handleLikeDislike = async () => {
+    try {
+      setIsLiked(!isLiked);
+
+      const response = await axios.post(
+        `${Base_url}/toggleLikeDislike/${allProduct._id}/${storedUser}`
+      );
+
+      if (response.data && response.data.likesCount !== undefined) {
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
+      <Navbar />
       <div className=" md:flex block container md:px-10 px-0 mx-auto py-4 justify-between">
         <div className=" md:w-[70%] w-[100%]">
-        <div>
-        <ul className=" flex mb-4  gap-1 items-center">
-          <li>
-            <Link
-              to={""}
-              className=" text-black font-semibold text-xs border-b  border-black"
-            >
-              Menswear
-            </Link>
-          </li>
+          <div>
+            <ul className=" flex mb-4  gap-1 items-center">
+              <li>
+                <Link
+                  to={""}
+                  className=" text-black font-semibold text-xs border-b  border-black"
+                >
+                  {allProduct?.brandID?.name}
+                </Link>
+              </li>
 
-          <li className=" pt-1">
-            <FaAngleRight size={12} className=" text-gray-400" />
-          </li>
-          <li>
-            <Link
-              to={""}
-              className=" text-black font-semibold text-xs border-b  border-black"
-            >
-              Needles Menswear
-            </Link>
-          </li>
-          <li className=" pt-1">
-            <FaAngleRight size={12} className=" text-gray-400" />
-          </li>
-          <li>
-            <Link
-              to={""}
-              className=" text-black font-semibold text-xs border-b  border-black"
-            >
-              Needles Tops
-            </Link>
-          </li>
+              <li className=" pt-1">
+                <FaAngleRight size={12} className=" text-gray-400" />
+              </li>
+              <li>
+                <Link
+                  to={""}
+                  className=" text-black font-semibold text-xs border-b  border-black"
+                >
+                  {`${allProduct?.brandID?.name} ${allProduct?.departmentID?.name}`}
+                </Link>
+              </li>
+              <li className=" pt-1">
+                <FaAngleRight size={12} className=" text-gray-400" />
+              </li>
+              <li>
+                <Link
+                  to={""}
+                  className=" text-black font-semibold text-xs border-b  border-black"
+                >
+                  {`${allProduct?.brandID?.name} ${allProduct?.categoryID?.name}`}
+                </Link>
+              </li>
+              <li className=" pt-1">
+                <FaAngleRight size={12} className=" text-gray-400" />
+              </li>
+              <li>
+                <Link
+                  to={""}
+                  className=" text-black font-semibold text-xs border-b  border-black"
+                >
+                  {`${allProduct?.brandID?.name} ${allProduct?.subcategoryID?.name}`}
+                </Link>
+              </li>
 
-          <li className=" pt-1">
-            <FaAngleRight size={12} className=" text-gray-400" />
-          </li>
+              <li className=" pt-1">
+                <FaAngleRight size={12} className=" text-gray-400" />
+              </li>
 
-          <li>
-            <a className=" text-gray-500 font-semibold text-xs ">Needles Button Up Floral Shirt</a>
-          </li>
-        </ul>
-      </div>
+              <li>
+                <a className=" text-gray-500 font-semibold text-xs ">
+                  {`${allProduct?.name?.slice(0, 30)}...`}
+                </a>
+              </li>
+            </ul>
+          </div>
           <div className="overflow-hidden relative md:w-[90%] w-[100%]">
             <div
               className="flex  transition-transform ease-out duration-500 h-screen	"
               style={{ transform: `translateX(-${curr * 100}%)` }}
             >
-              {/* {sliders?.map((s) => (
-          <> */}
-              <div className="  flex-none  w-full h-full ">
-                <img
-                  onClick={openSlider}
-                  src={require("../../assets/images/product1.avif")}
-                  alt=""
-                  className=" w-full cursor-pointer h-full   object-contain"
-                />
-              </div>
-              <div className=" flex-none  w-full h-full ">
-                <img
-                  onClick={openSlider}
-                  src={require("../../assets/images/product2.avif")}
-                  alt=""
-                  className=" w-full object-contain h-full"
-                />
-              </div>
-              <div className=" flex-none  w-full h-full ">
-                <img
-                  onClick={openSlider}
-                  src={require("../../assets/images/product3.avif")}
-                  alt=""
-                  className=" w-full h-full  object-contain"
-                />
-              </div>
-              <div className=" flex-none  w-full h-full ">
-                <img
-                  onClick={openSlider}
-                  src={require("../../assets/images/product4.avif")}
-                  alt=""
-                  className=" w-full h-full  object-contain"
-                />
-              </div>
-
-              {/* </>
-        ))} */}
+              {allProduct?.images?.map((image, i) => {
+                console.log(image, "slider image============>>>>>>>>>>>>>>");
+                return (
+                  <div key={i} className="flex-none w-full h-full">
+                    <img
+                      onClick={openSlider}
+                      src={image}
+                      alt=""
+                      className="w-full cursor-pointer h-full object-contain"
+                    />
+                  </div>
+                );
+              })}
             </div>
             {/* <div className="absolute inset-0 flex items-center justify-between"> */}
             <button
@@ -210,13 +198,13 @@ const ProductDetails = ({
           </div>
           <div className=" mt-2 md:block hidden">
             <div className="flex items-center justify-center gap-2">
-              {sliders.map((_, i) => (
+              {allProduct?.images?.map((_, i) => (
                 <div
                   key={i}
                   onClick={() => goToSlide(i)}
                   className={`
               transition-all w-16 h-16 overflow-hidden bg-white 
-              ${curr === i ? " w-14 h-14" : "bg-opacity-50"}
+              ${curr ===i?" w-14 h-14" : "bg-opacity-50"}
             `}
                 >
                   <img
@@ -234,22 +222,51 @@ const ProductDetails = ({
             Staff pick
           </span>
           <div className=" flex justify-between items-center">
-            <h6 className=" text-xl font-bold">Vetements</h6>
+            <Link
+              to={`/designers_details/${allProduct?.brandID?._id}`}
+              className=" text-lg font-bold border-b border-black mb-0  leading-5"
+            >
+              {allProduct?.brandID?.name}
+            </Link>
             <div>
-              <FaHeart size={25} />
-              <span className=" text-sm  font-medium">32</span>
+              {isLiked ? (
+                <FaHeart
+                  size={25}
+                  onClick={() => {
+                    handleLikeDislike(allProduct._id);
+                  }}
+                />
+              ) : (
+                <FaRegHeart
+                  size={25}
+                  onClick={() => {
+                    handleLikeDislike(allProduct._id);
+                  }}
+                />
+                // <FaHeart/>
+              )}
+
+              <span className=" text-sm   ml-2 font-medium">
+                {allProduct?.likes?.length}
+              </span>
             </div>
           </div>
-          <p className=" pb-2">FW16 Oversized Ring Belt</p>
+          <p className=" pb-2">{`${allProduct?.name?.slice(0, 40)}...`}</p>
           <p className="pb-2">
-            Size <span className=" uppercase text-gray-500">ONE SIZE</span>
+            Size{" "}
+            <span className=" uppercase text-gray-500">{allProduct?.size}</span>
           </p>
           <p className="pb-2">
-            Color <span className=" uppercase text-gray-500">Black</span>
+            Color{" "}
+            <span className=" uppercase text-gray-500">
+              {allProduct?.color}
+            </span>
           </p>
           <p className="pb-2">
             Condition{" "}
-            <span className=" uppercase text-gray-500">Gently Used</span>
+            <span className=" uppercase text-gray-500">
+              {allProduct?.condition}
+            </span>
           </p>
 
           <h6 className="pb-2">
@@ -265,6 +282,7 @@ const ProductDetails = ({
             </span>
           </p>
           <Button
+            onClick={() => navigate(`/checkout/${allProduct._id}`)}
             label={"purchase"}
             className={" uppercase text-white bg-black w-full py-3"}
           />
@@ -278,56 +296,34 @@ const ProductDetails = ({
             className={" uppercase text-black bg-white border  w-full py-3"}
           />
 
-          <div className=" border p-4 mt-10">
-            <div className=" flex items-center gap-2">
-              <svg
-                width="20px"
-                height="20px"
-                viewBox="0 0 22 22"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="-flair"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M14.375 3.125L11.75 0.5H10.25L7.625 3.125H4.25L3.125 4.25V7.625L0.5 10.25V11.75L3.125 14.375V17.75L4.25 18.875H7.625L10.25 21.5H11.75L14.375 18.875H17.75L18.875 17.75V14.375L21.5 11.75V10.25L18.875 7.625V4.25L17.75 3.125H14.375ZM17.1287 4.625H13.7537L11.1287 2H10.8713L8.24632 4.625H4.87132L4.625 4.87132V8.24632L2 10.8713V11.1287L4.625 13.7537V17.1287L4.87132 17.375H8.24632L10.8713 20H11.1287L13.7537 17.375H17.1287L17.375 17.1287V13.7537L20 11.1287V10.8713L17.375 8.24632V4.87132L17.1287 4.625Z"
-                  fill="#0000FF"
-                ></path>
-                <path
-                  d="M15.875 8.75L10.25 14.375H8.75L5.75 11.375L7.0625 10.0625L9.5 12.5L14.5625 7.4375L15.875 8.75Z"
-                  fill="#0000FF"
-                ></path>
-              </svg>
-              <h5 className=" text-black text-lg font-bold">Authenticated</h5>
-            </div>
-            <p className=" text-base   font-normal">
-              This item has been authenticated by our in-house <br /> team or a
-              trusted partner.{" "}
-              <Link to={""} className=" text-blue-600">
-                {" "}
-                Learn more →
-              </Link>
-            </p>
-          </div>
-
-          <div className=" py-4 md:flex block gap-4 border-b">
-            <div>
+          <div className=" py-4 mt-5 md:flex block gap-4 border-b">
+            {allProduct?.createdBy?.type==="user"?(
+              <div>
               <img
-                src={require("../../assets/images/product2.avif")}
+                src={allProduct?.createdBy?.profile_image}
                 className="  w-14 h-14 rounded-full"
                 alt=""
               />
             </div>
+            ):(
+<div>
+              <img
+                src={allProduct?.createdBy?.profile_image}
+                className="  w-14 h-14 rounded-full"
+                alt=""
+              />
+            </div>
+            )}
+            
             <div className=" mt-2">
-              <h3 className=" text-black font-semibold">kosher_jawnz</h3>
+              <h3 className=" text-black font-semibold pb-2">{singleStore?.name}</h3>
 
               <div className=" flex gap-2">
                 <div className=" flex">
-                  <MdOutlineStarPurple500 size={20} />
-                  <MdOutlineStarPurple500 size={20} />
-                  <MdOutlineStarPurple500 size={20} />
-                  <MdOutlineStarPurple500 size={20} />
+                  <MdOutlineStarPurple500 size={20} color="green" />
+                  <MdOutlineStarPurple500 size={20} color="green" />
+                  <MdOutlineStarPurple500 size={20} color="green" />
+                  <MdOutlineStarPurple500 size={20} color="green" />
                 </div>
                 <p className=" text-sm">115 Reviews</p>
               </div>
@@ -423,68 +419,30 @@ const ProductDetails = ({
             </div>
           </div>
 
-          {/* Measurements */}
 
-          <h4 className="h5">Measurements</h4>
-          <p>
-            Measurements taken by seller with item in hand. Measured with
-            garment laid flat.
-          </p>
-
-          <table className="table border w-full">
-            <tr>
-              <td className=" py-1 px-3">14.96 in</td>
-              <td className=" py-1 px-3">Bust</td>
-              <td className=" py-1 px-3">Bust</td>
-            </tr>
-
-            <tr className="border-t">
-              <td className=" py-1 px-3">14.96 in</td>
-              <td className=" py-1 px-3">Bust</td>
-              <td className=" py-1 px-3">Bust</td>
-            </tr>
-          </table>
-
+          
           {/* tags */}
 
-          <h2 className="h4">Tags</h2>
+          <h4 className="h4 mt-3">Description</h4>
+
+          <p>{allProduct?.description}</p>
+
+          <h2 className="h4 mt-3">Tags</h2>
           <div className=" pt-2 flex  flex-wrap gap-2">
-            <Button
-              label={"#SWEATER"}
-              className={
-                " bg-white py-1 uppercase  text-xs   font-black border border-black"
-              }
-            />
-            <Button
-              label={"#KNIT"}
-              className={
-                " bg-white py-1 uppercase  text-xs  font-black border border-black"
-              }
-            />
-            <Button
-              label={"#ANN"}
-              className={
-                " bg-white py-1 uppercase  text-xs  font-black border border-black"
-              }
-            />
-            <Button
-              label={"#ANNDEMEULEMEESTER"}
-              className={
-                " bg-white py-1 uppercase  text-xs  font-black border border-black"
-              }
-            />
-            <Button
-              label={"#ANND"}
-              className={
-                " bg-white py-1 uppercase  text-xs  font-black border border-black"
-              }
-            />
+            {allProduct?.tags?.map((item, index) => (
+              <Button
+                label={`# ${item}`}
+                className={
+                  " bg-white py-1 uppercase  text-xs   font-black border border-black"
+                }
+              />
+            ))}
           </div>
         </div>
       </div>
 
       <div className=" container mx-auto py-10">
-        <div className=" flex items-center justify-between">
+        {/* <div className=" flex items-center justify-between">
           <div>
             <h4 className=" text-black font-medium text-xl">
               Deals On Similar Listings
@@ -496,16 +454,17 @@ const ProductDetails = ({
               <span>SEE ALL </span> <FaLongArrowAltRight color="#0000FF" />{" "}
             </p>
           </div>
-        </div>
-        <ProductSlider
-          items={data.map((item, index) => {
+        </div> */}
+        {/* <ProductSlider */}
+
+        {/* items={data.map((item, index) => {
             return (
               <>
                 <Product item={item.image} />
               </>
             );
           })}
-        />
+        /> */}
 
         <Modal
           className={"sm:max-w-lg"}
@@ -562,10 +521,6 @@ const ProductDetails = ({
           </div> */}
         </Modal>
 
-
-
-
-
         {/* slider modal */}
 
         <Modal
@@ -577,70 +532,48 @@ const ProductDetails = ({
           <div className="">
             <div className=" p-3 flex justify-between items-center">
               <div></div>
-             
+
               <MdClose onClick={() => setIsModalSlider(false)} size={25} />
             </div>
-         
 
             <div className=" mx-auto">
-             
-            <div className="overflow-hidden w-full  h-[75vh] relative">
-            <div
-              className="flex  transition-transform ease-out duration-500 h-screen	"
-              style={{ transform: `translateX(-${curr * 100}%)` }}
-            >
-              {/* {sliders?.map((s) => (
-          <> */}
-              <div className="  flex-none  w-full h-full ">
-                <img
-                  onClick={openSlider}
-                  src={require("../../assets/images/product1.avif")}
-                  alt=""
-                  className=" w-full h-full   object-contain"
-                />
+              <div className="overflow-hidden w-full  h-[75vh] relative">
+                <div
+                  className="flex  transition-transform ease-out duration-500 h-screen	"
+                  style={{ transform: `translateX(-${curr * 100}%)` }}
+                >
+                  {allProduct?.images?.map((image, i) => {
+                    console.log(
+                      image,
+                      "slider image============>>>>>>>>>>>>>>"
+                    );
+                    return (
+                      <div key={i} className="flex-none w-full h-full">
+                        <img
+                          onClick={openSlider}
+                          src={image}
+                          alt=""
+                          className="w-full cursor-pointer h-full object-contain"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* <div className="absolute inset-0 flex items-center justify-between"> */}
+                <button
+                  onClick={prev}
+                  className=" w-12 h-16 shadow  absolute left-0 top-56 flex  justify-center items-center bg-white/80 text-gray-800 hover:bg-white"
+                >
+                  <TfiAngleLeft size={20} className="" />
+                </button>
+                <button
+                  onClick={next}
+                  className=" w-12 h-16  absolute right-0 top-56 flex justify-center items-center shadow bg-white/80 text-gray-800 hover:bg-white"
+                >
+                  <TfiAngleRight size={20} />
+                </button>
+                {/* </div> */}
               </div>
-              <div className=" flex-none  w-full h-full ">
-                <img
-                  src={require("../../assets/images/product2.avif")}
-                  alt=""
-                  className=" w-full object-contain h-full"
-                />
-              </div>
-              <div className=" flex-none  w-full h-full ">
-                <img
-                  src={require("../../assets/images/product3.avif")}
-                  alt=""
-                  className=" w-full h-full  object-contain"
-                />
-              </div>
-              <div className=" flex-none  w-full h-full ">
-                <img
-                  src={require("../../assets/images/product4.avif")}
-                  alt=""
-                  className=" w-full h-full  object-contain"
-                />
-              </div>
-
-              {/* </>
-        ))} */}
-            </div>
-            {/* <div className="absolute inset-0 flex items-center justify-between"> */}
-            <button
-              onClick={prev}
-              className=" w-12 h-16 shadow  absolute left-0 top-56 flex  justify-center items-center bg-white/80 text-gray-800 hover:bg-white"
-            >
-              <TfiAngleLeft size={20} className="" />
-            </button>
-            <button
-              onClick={next}
-              className=" w-12 h-16  absolute right-0 top-56 flex justify-center items-center shadow bg-white/80 text-gray-800 hover:bg-white"
-            >
-              <TfiAngleRight size={20} />
-            </button>
-            {/* </div> */}
-          </div>
-         
-
             </div>
           </div>
 
@@ -655,6 +588,7 @@ const ProductDetails = ({
           </div> */}
         </Modal>
       </div>
+      <Footer />
     </div>
   );
 };

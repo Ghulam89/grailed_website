@@ -1,15 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Tabs from "../../components/Tabs";
 import Product from "../../components/cards/Product";
 import Button from "../../components/Button";
 import DesignersCard from "../../components/cards/DesignersCard";
+import axios from "axios";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
+import { Base_url } from "../../utils/Base_url";
 
 const Favorites = () => {
+  const storedUser = localStorage.getItem("user_ID") || undefined;
+  const [allProduct, setAllProduct] = useState([]);
+  useEffect(() => {
+    axios
+      .post(`${Base_url}/getAllProducts`)
+      .then((res) => {
+        console.log(res);
+
+        setAllProduct(res.data, "all products");
+      })
+      .catch((error) => {});
+  }, []);
+
   const TabContent1 = () => (
     <div>
-      <Product />
-      <Product />
-      <Product />
+      {allProduct
+        .filter((item) => item?.likes?.includes(storedUser))
+        .map((item, index) => (
+          <Product key={index} item={item} />
+        ))}
     </div>
   );
   const TabContent2 = () => (
@@ -36,7 +55,6 @@ const Favorites = () => {
     </div>
   );
 
-
   const TabContent4 = () => (
     <div className=" text-center pt-3">
       <div>
@@ -56,8 +74,7 @@ const Favorites = () => {
     </div>
   );
 
-
-  const TabContent5= () => (
+  const TabContent5 = () => (
     <div className=" text-center pt-3">
       <div>
         <div className=" w-28 h-28  mx-auto border-4 border-gray-300  rounded-full"></div>
@@ -76,7 +93,6 @@ const Favorites = () => {
     </div>
   );
 
-
   const tabData = [
     { title: "Listings", content: <TabContent1 /> },
     { title: "Searches", content: <TabContent2 /> },
@@ -86,19 +102,23 @@ const Favorites = () => {
   ];
   const defaultTab = "Listings";
   return (
-    <div className=" container mx-auto">
-      <div className=" py-8 text-center">
-        <h1 className="h2">Favorites</h1>
-        <p className=" text-gray-400 pt-4">
-          You will be notified when your favorite listings drop in price or are
-          relisted.
-        </p>
-      </div>
+    <>
+      <Navbar />
+      <div className=" container mx-auto">
+        <div className=" py-8 text-center">
+          <h1 className="h2">Favorites</h1>
+          <p className=" text-gray-400 pt-4">
+            You will be notified when your favorite listings drop in price or
+            are relisted.
+          </p>
+        </div>
 
-      <div className="container mx-auto mt-8">
-        <Tabs tabs={tabData} defaultTab={defaultTab} />
+        <div className="container mx-auto mt-8">
+          <Tabs tabs={tabData} defaultTab={defaultTab} />
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

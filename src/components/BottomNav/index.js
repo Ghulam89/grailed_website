@@ -1,8 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import NavLinks from './NavLinks'
+import axios from 'axios';
+import { Base_url } from '../../utils/Base_url';
 
 const ButtonNav = () => {
+
+  const [designer,setDesigner] = useState([]);
+
+
+  useEffect(()=>{
+    axios
+    .post(`${Base_url}/getAllBrands`)
+    .then((res) => {
+      console.log(res);
+
+      setDesigner(res.data.brands, "all products");
+    })
+    .catch((error) => {});
+
+
+
+  },[])
+  
   return (
     <div className='  hidden md:block'>
       <div className='h-12 border-b flex items-center '>
@@ -13,46 +33,27 @@ const ButtonNav = () => {
               <li className='group  '>
                   <Link className=' text-xs  font-bold' to={''}>DESIGNERS</Link>
 
-                  <div className='  w-[100%] bg-white absolute hidden group-hover:block  top-16 border z-50 p-8  h-[70vh]'>
+                  <div className='  w-[100%] bg-white absolute hidden group-hover:block  top-14 border z-50 p-8  h-[70vh]'>
                 <div className=' flex gap-12'> 
                 <div>
                   <h1 className=' text-xl  font-medium'>Designers A-Z</h1>
                 </div>
                 <div>
                   <ul className=' leading-9'>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Acne Studios</Link>
+                    {designer?.map((item,index)=>{
+                      return (
+
+
+                        <>
+                          <li>
+                      <Link to={`/designers_details/${item._id}`} className=' text-black  text-sm font-medium'>{item.name}</Link>
                     </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Adidas</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Alexander McQueen</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Amiri</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Balenciaga</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Bape</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Bottega Veneta</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Celine</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Chanel</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Chrome Hearts</Link>
-                    </li>
-                    <li>
-                      <Link to={''} className=' text-black  text-sm font-medium'>Comme des Garcons</Link>
-                    </li>
+                        
+                        </>
+                      )
+                    })}
+                  
+                  
                   </ul>
                 </div>
                 </div>

@@ -1,42 +1,82 @@
 import React, { useEffect, useState } from "react";
-import Modal from "../../../components/modal";
 import Input from "../../../components/Input";
 import Button from "../../../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaApple } from "react-icons/fa";
 import { FaFacebookSquare } from "react-icons/fa";
-import { auth, provider } from "../../../utils/config";
-import { signInWithPopup } from "firebase/auth";
+// import { auth, provider } from "../../../utils/config";
+// import { signInWithPopup } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
-const Register = ({ isModalOpen, setIsModalOpen, closeModal, openModal }) => {
+import { toast } from "react-toastify";
+import { Base_url } from "../../../utils/Base_url";
+import { useDispatch } from "react-redux";
+import Navbar from "../../../components/navbar";
+import Footer from "../../../components/footer";
+const Register = () => {
   const [withEmail, setWithEmail] = useState(false);
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [value, setValue] = useState();
-  const handleClick = () => {
-    signInWithPopup(auth, provider).then((data) => {
-      setValue(data.user);
+  // const handleClick = () => {
+  //   signInWithPopup(auth, provider).then((data) => {
+  //     setValue(data.user);
 
-      localStorage.setItem("email", data.user);
-    });
-  };
-console.log(value);
+  //     localStorage.setItem("email", data.user);
+  //   });
+  // };
+  console.log(value);
   useEffect(() => {
     setValue(localStorage.getItem("email"));
   });
 
-  
+  const SubmitHandler = async (values) => {
+    if (values.email.value.length === 0) {
+      toast.error("Please enter your email Address!");
+    } else if (values.password.value.length === 0) {
+      toast.error("Please enter your password!");
+    } else {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        email: values.email.value,
+        password: values.password.value,
+        type: "user",
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      fetch(`${Base_url}/register`, requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          let data = JSON.parse(result);
+          console.log("resposne from signup-----", data);
+
+          if (data.success === true) {
+            toast.success(data.message);
+
+            navigate("/login");
+          } else {
+            toast.error(data.message);
+          }
+        })
+        .catch((error) => {});
+    }
+  };
+
   return (
-    <div>
-      {withEmail === false ? (
-        <>
-          <Modal
-              
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            className={" rounded-lg max-w-md"}
-          >
-            {/* Modal Content */}
-            <div className="  text-center">
+    <>
+      <div>
+        <Navbar />
+        {withEmail === false ? (
+          <>
+            <div className=" rounded-lg max-w-md mx-auto my-8 shadow-xl text-center">
               <div className=" py-10 px-8">
                 <h1 className="h2  font-medium">Create an Account</h1>
                 <p className=" pt-4  pb-8 text-left">
@@ -60,7 +100,6 @@ console.log(value);
                 />
 
                 <Button
-                  onClick={handleClick}
                   Icons={<FcGoogle size={20} className="mr-2" />}
                   label={"Continue with Google"}
                   className={
@@ -79,9 +118,9 @@ console.log(value);
                 <div>
                   <p className=" text-left mt-3">
                     Already have an accouunt?{" "}
-                    <Link to={""} className=" border-b">
+                    <Link to={"/login"} className=" border-b">
                       Log in
-                    </Link>{" "}
+                    </Link>
                   </p>
                   <p className=" text-sm mt-7">
                     By creating an account, I accept Grailed's{" "}
@@ -96,54 +135,55 @@ console.log(value);
                 </div>
               </div>
             </div>
-          </Modal>
-        </>
-      ) : (
-        <>
-          <Modal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            className={" rounded-lg max-w-md"}
-          >
-            {/* Modal Content */}
-            <div className="  text-center">
+          </>
+        ) : (
+          <>
+            <div className="  text-center shadow-xl rounded-lg max-w-md my-8 mx-auto">
               <div className=" py-10 px-8">
                 <h1 className="h2  font-medium">Create an Account</h1>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    SubmitHandler(e.target);
+                  }}
+                >
+                  <div className=" text-left mt-5">
+                    <label className=" text-left font-semibold mb-3">
+                      Email Address
+                    </label>
+                    <Input
+                      name={"email"}
+                      placeholder={""}
+                      className={"border w-full rounded-sm py-2"}
+                    />
+                  </div>
 
-                <div className=" text-left mt-5">
-                  <label className=" text-left font-semibold mb-3">
-                    Email Address
-                  </label>
-                  <Input
-                    placeholder={""}
-                    className={"border w-full rounded-sm py-2"}
+                  <div className=" text-left mt-5">
+                    <label className=" text-left font-semibold mb-3">
+                      Password
+                    </label>
+                    <Input
+                      name={"password"}
+                      placeholder={""}
+                      className={"border w-full rounded-sm py-2"}
+                    />
+                  </div>
+
+                  <Button
+                    label={"sign up"}
+                    type={"submit"}
+                    className={
+                      " uppercase border w-full py-2 mt-5  text-white text-sm bg-black"
+                    }
                   />
-                </div>
-
-                <div className=" text-left mt-5">
-                  <label className=" text-left font-semibold mb-3">
-                    Password
-                  </label>
-                  <Input
-                    placeholder={""}
-                    className={"border w-full rounded-sm py-2"}
-                  />
-                </div>
-
-                <Button
-                  label={"sign up"}
-                  className={
-                    " uppercase border w-full py-2 mt-5  text-gray-400 text-sm bg-gray-100"
-                  }
-                />
-
+                </form>
                 <div>
                   <p className=" text-left mt-3">
                     Sign up for email to access sales, exclusive drops & more
-                    from Grailed
-                    <Link to={""} className=" border-b">
+                    from Grailed  <Link to={"/login"} className=" border-b">
                       Log in
-                    </Link>{" "}
+                    </Link>
+                    
                   </p>
                   <p className=" text-sm mt-7">
                     By creating an account, I accept Grailed's{" "}
@@ -158,10 +198,11 @@ console.log(value);
                 </div>
               </div>
             </div>
-          </Modal>
-        </>
-      )}
-    </div>
+          </>
+        )}
+        <Footer />
+      </div>
+    </>
   );
 };
 

@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BrandCard = () => {
+const BrandCard = ({item}) => {
   return (
-    <Link className=" text-center">
+    <Link  to={`/designers_details/${item._id}`} className=" text-center  w-44 h-44">
       <img
-        src={require("../../assets/images/brand1.avif")}
+        src={item?.logo}
         className="  border rounded-full w-full"
         alt=""
       />

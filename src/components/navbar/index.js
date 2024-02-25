@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../Input";
 import Button from "../Button";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import ButtonNav from "../BottomNav";
 import { IoIosCloseCircle } from "react-icons/io";
 import NavLinks from "../BottomNav/NavLinks";
 import Accordion from "../Accordion/Accordion";
 import { FiSearch } from "react-icons/fi";
-import Register from "../../screens/auth/register";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -16,6 +18,8 @@ const Navbar = () => {
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
+
+  const navigate = useNavigate();
 
   const [accordions, setAccordion] = useState([
     {
@@ -25,9 +29,6 @@ const Navbar = () => {
       isOpen: false,
     },
   ]);
-
-
-  
 
   const toggleAccordion = (accordionkey) => {
     const updatedAccordions = accordions.map((accord) => {
@@ -41,22 +42,44 @@ const Navbar = () => {
     setAccordion(updatedAccordions);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const openModal = () => {
-      setIsModalOpen(true);
-    };
-  
-    const closeModal = () => {
-      setIsModalOpen(false);
-    };
+  const storedUser = localStorage.getItem("user_ID") || undefined;
+
+  const dispatch = useDispatch();
+
+  const [allCategory, setAllCategory] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    axios
+      .post("http://34.84.41.203:4142/api/getAllSubcategories")
+      .then((res) => {
+        console.log(res);
+
+        setAllCategory(res.data);
+      })
+      .catch((error) => {});
+
+    axios
+      .post(`http://34.84.41.203:4142/api/getSingleUser/${storedUser}`)
+      .then((res) => {
+        console.log(res);
+
+        setUsers(res.data.user);
+      })
+      .catch((error) => {});
+  }, []);
+
+  const removeLocal = () => {
+    localStorage.removeItem("user_ID");
+    navigate("/");
+
+    toast.success("user sign out successfuly!");
+  };
 
   return (
     <>
-    <Register  isModalOpen={isModalOpen} onClose={closeModal}    />
       <header className=" bg-white border-b   z-40 sticky top-0   h-20 flex items-center   justify-between md:px-14 px-4">
-        {/* top navbar  */}
-
         <div className="  flex gap-4">
           <h1 className=" md:text-4xl  text-2xl text-black font-semibold">
             {" "}
@@ -73,10 +96,9 @@ const Navbar = () => {
                     "bg-white    border  md:block hidden py-2 border-gray-300 uppercase   text-xs"
                   }
                 />
-                
               }
             />
-            <FiSearch    className=" absolute top-3 left-3"  />
+            <FiSearch className=" absolute top-3 left-3" />
           </div>
         </div>
 
@@ -106,64 +128,105 @@ const Navbar = () => {
                 FOR YOU
               </Link>
             </li>
-            <li>
-               <Button  label={'login'}  className={'text-xs  font-bold uppercase  border py-2 w-16'} />
-            </li>
-            <li>
-               <Button  label={'Sign up'}  onClick={openModal} className={'text-xs  bg-black text-white font-bold uppercase  border py-2'} />
-            </li>
-            {/* <li>
-              <Link className=" text-xs  font-bold" to={"/favorites"}>
-                <FaHeart size={25} />
-              </Link>
-            </li>
-            <li>
-              <div class="group relative cursor-pointer py-2">
-                <img src={Profile} alt="" className=" w-8 h-8" />
 
-                <div
-                  class="invisible   w-36 absolute  top-14 right-0 z-50 flex  flex-col bg-white py-1  border text-gray-800 shadow-xl group-hover:visible"
-                  onClick=""
-                >
-                  <p className=" text-black  text-xs font-bold border-b p-2">
-                    GM493349229{" "}
-                  </p>
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs  font-semibold  md:mx-2 hover:text-[#0000FF]">
-                    messages
+            {!storedUser ? (
+              <>
+                <li>
+                  <Button
+                    label={"login"}
+                    onClick={() => navigate("/login")}
+                    className={"text-xs  font-bold uppercase  border py-2 w-16"}
+                  />
+                </li>
+                <li>
+                  <Button
+                    label={"Sign up"}
+                    onClick={() => navigate("/register")}
+                    className={
+                      "text-xs  bg-black text-white font-bold uppercase  border py-2"
+                    }
+                  />
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link className=" text-xs  font-bold" to={"/favorites"}>
+                    <FaHeart size={25} />
                   </Link>
+                </li>
+                <li>
+                  <div class="group relative cursor-pointer py-2">
+                    {users?.profile_image?(
+ <img
+ src={users?.profile_image}
+ alt=""
+ className=" w-8 rounded-full h-8"
+/>
 
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
-                    favorites
-                  </Link>
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
-                    purchases  
-                  </Link>
-                  <hr />
+                    ):(
+                      <img
+                      src={require('../../assets/images/profile.png')}
+                      alt=""
+                      className=" w-8 rounded-full h-8"
+                    />
 
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
-                    sell
-                  </Link>
+                    )} 
+                   
+                    <div
+                      class="invisible   w-36 absolute  top-12 right-0 z-50 flex  flex-col bg-white py-1  border text-gray-800 shadow-xl group-hover:visible"
+                      onClick=""
+                    >
+                      <p className=" text-black  text-xs font-bold border-b p-2">
+                        {users?.email}
+                      </p>
+                      <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs  font-semibold  md:mx-2 hover:text-[#0000FF]">
+                        messages
+                      </Link>
 
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
-                    for sale
-                  </Link>
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
-                    sold
-                  </Link>
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
-                    default
-                  </Link>
+                      <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
+                        favorites
+                      </Link>
+                      <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
+                        purchases
+                      </Link>
+                      <hr />
 
-                  <Link to={'/users/my_profile'} class="my-1 block font-semibold  border-gray-100 py-1  text-black uppercase text-xs hover:text-[#0000FF] md:mx-2">
-                    my account
-                  </Link>
+                      <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
+                        sell
+                      </Link>
 
-                  <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs hover:text-[#0000FF] md:mx-2">
-                    sign out
-                  </Link>
-                </div>
-              </div>
-            </li> */}
+                      <Link
+                        to={"/sell/for_sale"}
+                        class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2"
+                      >
+                        for sale
+                      </Link>
+                      <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
+                        sold
+                      </Link>
+                      <Link class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs font-semibold hover:text-[#0000FF] md:mx-2">
+                        default
+                      </Link>
+
+                      <Link
+                        to={"/users/my_profile"}
+                        class="my-1 block font-semibold  border-gray-100 py-1  text-black uppercase text-xs hover:text-[#0000FF] md:mx-2"
+                      >
+                        my account
+                      </Link>
+
+                      <Link
+                        onClick={removeLocal}
+                        class="my-1 block  border-gray-100 py-1  text-black uppercase text-xs hover:text-[#0000FF] md:mx-2"
+                      >
+                        sign out
+                      </Link>
+                    </div>
+                  </div>
+                </li>
+              </>
+            )}
           </ul>
         </div>
 

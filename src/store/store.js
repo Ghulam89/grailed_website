@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import nextReducer from "./nextSlice";
+import authReducer from "./authSlice";
 import {
   persistStore,
   persistReducer,
@@ -11,6 +12,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import localForage from "localforage";
+
 const persistConfig = {
   key: "root",
   version: 1,
@@ -20,7 +22,10 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, nextReducer);
 
 export const store = configureStore({
-  reducer: { next: persistedReducer },
+  reducer: {
+    next: persistedReducer,
+    auth: authReducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -30,8 +35,3 @@ export const store = configureStore({
 });
 
 export let persistor = persistStore(store);
-
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch;

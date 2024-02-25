@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HomeBanner from "../../components/HomeBanner";
 import Category from "../../components/category";
 import ShopBanner from "../../components/shopbanner";
@@ -7,64 +7,45 @@ import ProductSlider from "../../components/sliders/productSlider";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import Featureds from "../../components/Featureds";
 import Product from "../../components/cards/Product";
+import axios from "axios";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
+import { Base_url } from "../../utils/Base_url";
 
 const Home = () => {
-  const data = [
-    {
-      id: 1,
-      title: "",
-      image: require("../../assets/images/product1.avif"),
-    },
-    {
-      id: 2,
-      title: "",
-      image: require("../../assets/images/product2.avif"),
-    },
-    {
-      id: 3,
-      title: "",
-      image: require("../../assets/images/product3.avif"),
-    },
-    {
-      id: 4,
-      title: "",
-      image: require("../../assets/images/product4.avif"),
-    },
-    {
-      id: 5,
-      title: "",
-      image: require("../../assets/images/product1.avif"),
-    },
-    {
-      id: 6,
-      title: "",
-      image: require("../../assets/images/product3.avif"),
-    },
-    {
-      id: 7,
-      title: "",
-      image: require("../../assets/images/product4.avif"),
-    },
-  ];
+  const [allProduct, setAllProduct] = useState([]);
+
+  useEffect(() => {
+    axios
+      .post(`${Base_url}/getAllProducts`)
+      .then((res) => {
+        console.log(res);
+
+        setAllProduct(res.data, "all products");
+      })
+      .catch((error) => {});
+  }, []);
 
   return (
     <div>
+      <Navbar />
       <HomeBanner />
-      <div className=" container mx-auto py-10">
+      <div className=" container mx-auto pb-10">
+        <Category />
         <div className=" flex  px-4 items-center justify-between">
           <h4 className=" h4">Recently Viewed</h4>
         </div>
         <ProductSlider
-          items={data.map((item, index) => {
+          items={allProduct.map((item, index) => {
             return (
               <>
-                <Product item={item.image} />
+                <Product item={item} />
               </>
             );
           })}
         />
       </div>
-      <Category />
+
       <Featureds />
       <PopularBrands />
 
@@ -81,16 +62,17 @@ const Home = () => {
           </div>
         </div>
         <ProductSlider
-          items={data.map((item, index) => {
+          items={allProduct.map((item, index) => {
             return (
               <>
-                <Product item={item.image} />
+                <Product item={item} />
               </>
             );
           })}
         />
       </div>
       <ShopBanner />
+      <Footer />
     </div>
   );
 };

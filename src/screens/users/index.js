@@ -1,9 +1,13 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
 
 const Users = () => {
   return (
-    <div className=" flex container mx-auto py-10">
+    <>
+      <Navbar/>
+      <div className=" flex container mx-auto py-10">
       <div className=" w-[20%]">
         <ul className=" leading-8">
           <li>
@@ -98,6 +102,9 @@ const Users = () => {
         <Outlet />
       </div>
     </div>
+      <Footer/>
+    </>
+   
   );
 };
 
