@@ -8,9 +8,10 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import Featureds from "../../components/Featureds";
 import Product from "../../components/cards/Product";
 import axios from "axios";
-import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import { Base_url } from "../../utils/Base_url";
+import Navbar from "../../components/Header/Navbar";
+import BottomHeader from "../../components/Header/BottomHeader";
 
 const Home = () => {
   const [allProduct, setAllProduct] = useState([]);
@@ -26,51 +27,31 @@ const Home = () => {
       .catch((error) => {});
   }, []);
 
+
+  const prod = [
+    {
+      id:1,
+      name:'product '
+    }
+  ]
+
   return (
     <div>
-      <Navbar />
+      <Navbar/>
+      <BottomHeader/>
       <HomeBanner />
       <div className=" container mx-auto pb-10">
         <Category />
         <div className=" flex  px-4 items-center justify-between">
-          <h4 className=" h4">Recently Viewed</h4>
+          <h4 className=" font-medium text-2xl text-black">New Arrivals</h4>
+          <span className="  text-sm text-blue-600">Shop all New Arrivals</span>
         </div>
-        <ProductSlider
-          items={allProduct.map((item, index) => {
-            return (
-              <>
-                <Product item={item} />
-              </>
-            );
-          })}
-        />
+        <div className=" flex  items-center"></div>
       </div>
 
       <Featureds />
       <PopularBrands />
 
-      <div className=" container mx-auto py-10">
-        <div className=" flex items-center px-4  justify-between">
-          <div>
-            <h4 className=" text-black font-medium text-xl">Staff Picks</h4>
-          </div>
-          <div>
-            <p className=" text-xs flex items-center gap-1 text-[#0000FF]   font-extrabold">
-              {" "}
-              <span>SEE ALL </span> <FaLongArrowAltRight color="#0000FF" />{" "}
-            </p>
-          </div>
-        </div>
-        <ProductSlider
-          items={allProduct.map((item, index) => {
-            return (
-              <>
-                <Product item={item} />
-              </>
-            );
-          })}
-        />
-      </div>
       <ShopBanner />
       <Footer />
     </div>

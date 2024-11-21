@@ -33,8 +33,9 @@ const Product = ({ item, setupdate }) => {
   };
   return (
     <>
+    {/* to={`/product_details/${item?._id}`} */}
       <div className="scroll-item inline-block m-2 w-56 bg-white rounded">
-        <Link to={`/product_details/${item?._id}`} className="  ">
+        <Link  className="  ">
           <div className="relative w-56    h-64">
             <img src={item?.images?.[0]} className="   w-full h-full" alt="" />
             <span className=" uppercase  font-bold  text-xs absolute top-2  left-2 bg-black text-white px-2 py-1">

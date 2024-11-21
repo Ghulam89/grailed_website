@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Input from "../Input";
 import Button from "../Button";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import ButtonNav from "../BottomNav";
 import { IoIosCloseCircle } from "react-icons/io";
@@ -42,7 +42,6 @@ const Navbar = () => {
     setAccordion(updatedAccordions);
   };
 
-
   const storedUser = localStorage.getItem("user_ID") || undefined;
 
   const dispatch = useDispatch();
@@ -79,12 +78,16 @@ const Navbar = () => {
 
   return (
     <>
-      <header className=" bg-white border-b   z-40 sticky top-0   h-20 flex items-center   justify-between md:px-14 px-4">
-        <div className="  flex gap-4">
-          <h1 className=" md:text-4xl  text-2xl text-black font-semibold">
-            {" "}
-            GRAILED
-          </h1>
+      <header className=" bg-white border-b   px-12 z-40 sticky top-0 items-center  flex   justify-between">
+        <div className="  flex items-center gap-4">
+          <div className=" w-28">
+            <img
+              src={require("../../assets/images/logo.jpeg")}
+              className=" w-full mx-auto"
+              alt=""
+            />
+          </div>
+
           <div className="  xl:w-[500px]  relative lg:w-[350px] md:w-[400px] w-[200px]">
             <Input
               className={" border  pl-8  w-full border-black py-2"}
@@ -157,22 +160,20 @@ const Navbar = () => {
                 </li>
                 <li>
                   <div class="group relative cursor-pointer py-2">
-                    {users?.profile_image?(
- <img
- src={users?.profile_image}
- alt=""
- className=" w-8 rounded-full h-8"
-/>
-
-                    ):(
+                    {users?.profile_image ? (
                       <img
-                      src={require('../../assets/images/profile.png')}
-                      alt=""
-                      className=" w-8 rounded-full h-8"
-                    />
+                        src={users?.profile_image}
+                        alt=""
+                        className=" w-8 rounded-full h-8"
+                      />
+                    ) : (
+                      <img
+                        src={require("../../assets/images/profile.png")}
+                        alt=""
+                        className=" w-8 rounded-full h-8"
+                      />
+                    )}
 
-                    )} 
-                   
                     <div
                       class="invisible   w-36 absolute  top-12 right-0 z-50 flex  flex-col bg-white py-1  border text-gray-800 shadow-xl group-hover:visible"
                       onClick=""

@@ -10,7 +10,7 @@ const Featureds = () => {
         </h4>
       </div>
 
-      <div className="grid mt-4 item1 col-span-2  xl:grid-cols-2  grid-cols-1 gap-5">
+      <div className="grid mt-4 item1 col-span-2  xl:grid-cols-3  grid-cols-1 gap-5">
         <div className="">
           <img src={require("../../assets/images/featured1.jpg")} alt="" />
 
@@ -52,19 +52,7 @@ const Featureds = () => {
             />
           </div>
         </div>
-        <div className="">
-          <img src={require("../../assets/images/featured4.jpg")} alt="" />
-
-          <div className=" border p-3 flex  justify-between items-center">
-            <p className=" text-md">COMMUNITY FEATURE</p>
-            <Button
-              label={"READ MORE"}
-              className={
-                " uppercase text-[#0000FF] text-sm font-bold py-2 hover:bg-[#0000FF] hover:text-white border-[#0000FF] border"
-              }
-            />
-          </div>
-        </div>
+       
       </div>
     </div>
   );
